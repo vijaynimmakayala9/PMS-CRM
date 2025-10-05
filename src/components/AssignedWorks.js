@@ -166,10 +166,10 @@ const AssignedWorks = () => {
     const heading = `Daily WorkSheet (${exportDates.startDate})`;
     ws['A1'] = { v: heading, t: 's' };
 
-    // Style main heading - Bold, larger font, colored background
+    // Style main heading - Bold, larger font, white text, blue background
     ws['A1'].s = {
       font: { bold: true, sz: 18, color: { rgb: "FFFFFF" } },
-      fill: { fgColor: { rgb: "1976D2" } }, // Blue background
+      fill: { fgColor: { rgb: "1E88E5" } }, // Bright blue background
       alignment: { horizontal: "center", vertical: "center" },
       border: {
         top: { style: "medium", color: { rgb: "000000" } },
@@ -213,6 +213,7 @@ const AssignedWorks = () => {
         }
       };
     });
+
 
     // Add data rows (starting at row 4)
     let currentRow = 3; // Row index (0-based, so row 4 = index 3)
