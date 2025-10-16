@@ -45,7 +45,7 @@ const AddProject = () => {
     }
 
     try {
-      const res = await fetch('https://admin-emp.onrender.com/api/projects', {
+      const res = await fetch('http://31.97.206.144:5000/api/projects', {
         method: 'POST',
         body: formDataToSend
       });

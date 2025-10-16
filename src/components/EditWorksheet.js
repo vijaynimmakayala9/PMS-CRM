@@ -23,7 +23,7 @@ const EditWorksheet = () => {
 
   const fetchAssignment = async () => {
     try {
-      const res = await fetch(`https://admin-emp.onrender.com/api/assign_project/${id}`);
+      const res = await fetch(`http://31.97.206.144:5000/api/assign_project/${id}`);
       const data = await res.json();
       if (data.success) {
         setFormData(data.data);
@@ -73,7 +73,7 @@ const EditWorksheet = () => {
     setSuccess('');
 
     try {
-      const res = await fetch(`https://admin-emp.onrender.com/api/update_assign_project/${id}`, {
+      const res = await fetch(`http://31.97.206.144:5000/api/update_assign_project/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)

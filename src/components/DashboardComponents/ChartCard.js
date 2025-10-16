@@ -27,12 +27,10 @@ const ChartCard = () => {
       try {
         setLoading(true);
 
-        // Fetch project counts
-        const countsRes = await fetch("https://admin-emp.onrender.com/api/counts");
+        const countsRes = await fetch("http://31.97.206.144:5000/api/counts");
         const countsData = await countsRes.json();
 
-        // Fetch staff count
-        const staffRes = await fetch("https://admin-emp.onrender.com/api/get_all_staffs");
+        const staffRes = await fetch("http://31.97.206.144:5000/api/get_all_staffs");
         const staffData = await staffRes.json();
 
         if (countsData.success && staffData.success) {
@@ -66,35 +64,122 @@ const ChartCard = () => {
           counts.marketing,
           counts.staff,
         ],
-        backgroundColor: ["#007bff", "#28a745", "#ffc107", "#dc3545", "#6f42c1"],
-        borderRadius: 6,
+        backgroundColor: [
+          "rgba(0, 123, 255, 0.8)",
+          "rgba(40, 167, 69, 0.8)",
+          "rgba(255, 193, 7, 0.8)",
+          "rgba(220, 53, 69, 0.8)",
+          "rgba(111, 66, 193, 0.8)",
+        ],
+        borderRadius: 8,
+        hoverBackgroundColor: [
+          "rgba(0, 123, 255, 1)",
+          "rgba(40, 167, 69, 1)",
+          "rgba(255, 193, 7, 1)",
+          "rgba(220, 53, 69, 1)",
+          "rgba(111, 66, 193, 1)",
+        ],
       },
     ],
   };
 
   const options = {
     responsive: true,
+    maintainAspectRatio: false, // Ensures flexible resizing
     plugins: {
       legend: { display: false },
-      title: { display: true, text: "Dashboard Overview", font: { size: 18 } },
+      title: {
+        display: true,
+        text: "Dashboard Overview",
+        font: { size: 18, weight: "bold" },
+        color: "#333",
+        padding: { top: 10, bottom: 20 },
+      },
+      tooltip: {
+        backgroundColor: "rgba(0,0,0,0.8)",
+        titleColor: "#fff",
+        bodyColor: "#fff",
+        borderColor: "#fff",
+        borderWidth: 1,
+      },
     },
     scales: {
-      y: { beginAtZero: true, stepSize: 1 },
+      x: {
+        ticks: {
+          color: "#555",
+          font: { size: 12 },
+        },
+        grid: { display: false },
+      },
+      y: {
+        beginAtZero: true,
+        ticks: {
+          color: "#555",
+          stepSize: 1,
+        },
+        grid: {
+          color: "rgba(0,0,0,0.05)",
+        },
+      },
     },
   };
 
   return (
-    <div className="card border-0 shadow-sm h-100">
-      <div className="card-body">
-        <h5 className="fw-semibold mb-4">Graphical Representation</h5>
+    <div
+      className="card border-0 shadow-sm h-100"
+      style={{
+        background:
+          "linear-gradient(135deg, rgba(255,255,255,1) 0%, rgba(245,247,250,1) 100%)",
+        borderRadius: "16px",
+      }}
+    >
+      <div className="card-body p-4">
+        <h5 className="fw-semibold mb-4 text-center text-md-start">
+          📊 Graphical Representation
+        </h5>
+
         {loading ? (
-          <div className="text-center text-muted">Loading chart...</div>
+          <div
+            className="text-center text-muted d-flex align-items-center justify-content-center"
+            style={{ height: "250px" }}
+          >
+            Loading chart...
+          </div>
         ) : (
-          <div style={{ height: "100%" }}>
+          <div
+            style={{
+              position: "relative",
+              width: "100%",
+              height: "300px",
+            }}
+            className="chart-container"
+          >
             <Bar data={data} options={options} />
           </div>
         )}
       </div>
+
+      {/* Responsive Styling */}
+      <style jsx>{`
+        @media (max-width: 768px) {
+          .chart-container {
+            height: 250px !important;
+          }
+          h5 {
+            font-size: 16px;
+            text-align: center;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .chart-container {
+            height: 220px !important;
+          }
+          h5 {
+            font-size: 15px;
+          }
+        }
+      `}</style>
     </div>
   );
 };

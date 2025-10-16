@@ -24,7 +24,7 @@ const Login = ({ onLogin }) => {
 
     setLoading(true);
     try {
-      const response = await fetch('https://admin-emp.onrender.com/api/login', {
+      const response = await fetch('http://31.97.206.144:5000/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -154,8 +154,8 @@ const Login = ({ onLogin }) => {
         <div style={{ position: 'absolute', bottom: '80px', left: '40px', width: '80px', height: '80px', borderRadius: '50%', backgroundColor: '#40E0D0', opacity: 0.5 }}></div>
 
         {/* Diagonal Lines */}
-        <div style={{ position: 'absolute', top: '20%', right: '10%', width: '60px', height: '4px', backgroundColor: 'white', transform: 'rotate(45deg)', opacity: 0.8 }}></div>
-        <div style={{ position: 'absolute', top: '25%', right: '15%', width: '80px', height: '4px', backgroundColor: 'white', transform: 'rotate(45deg)', opacity: 0.6 }}></div>
+        {/* <div style={{ position: 'absolute', top: '20%', right: '10%', width: '60px', height: '4px', backgroundColor: 'white', transform: 'rotate(45deg)', opacity: 0.8 }}></div>
+        <div style={{ position: 'absolute', top: '25%', right: '15%', width: '80px', height: '4px', backgroundColor: 'white', transform: 'rotate(45deg)', opacity: 0.6 }}></div> */}
 
         {/* Centered Logo */}
         <div className="position-absolute top-50 start-50 translate-middle" style={{ width: '180px', height: '180px', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10 }}>

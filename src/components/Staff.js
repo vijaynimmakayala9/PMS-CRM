@@ -1,15 +1,16 @@
-// src/components/Staff.jsx (Updated)
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { MdEdit, MdDelete } from 'react-icons/md';
+import { MdEdit, MdDelete, MdRemoveRedEye } from 'react-icons/md';
 
 const Staff = () => {
   const [staffList, setStaffList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [deletingId, setDeletingId] = useState(null);
+  const [selectedStaff, setSelectedStaff] = useState(null);
+  const [showModal, setShowModal] = useState(false);
 
-  // Filters & Search
+  // Filters
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -21,14 +22,11 @@ const Staff = () => {
 
   const fetchStaff = async () => {
     try {
-      const res = await fetch('https://admin-emp.onrender.com/api/get_all_staffs');
+      const res = await fetch('http://31.97.206.144:5000/api/get_all_staffs');
       const data = await res.json();
-      if (data.success) {
-        setStaffList(data.data);
-      } else {
-        setError('Failed to load staff');
-      }
-    } catch (err) {
+      if (data.success) setStaffList(data.data);
+      else setError('Failed to load staff');
+    } catch {
       setError('Network error');
     } finally {
       setLoading(false);
@@ -37,29 +35,40 @@ const Staff = () => {
 
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this staff member?')) return;
-
     setDeletingId(id);
     try {
-      const res = await fetch(`https://admin-emp.onrender.com/api/delete_staff/${id}`, {
+      const res = await fetch(`http://31.97.206.144:5000/api/delete_staff/${id}`, {
         method: 'DELETE'
       });
       const data = await res.json();
-
-      if (data.success) {
-        setStaffList(prev => prev.filter(staff => staff._id !== id));
-      } else {
-        alert('Failed to delete staff: ' + (data.message || 'Unknown error'));
-      }
-    } catch (err) {
-      alert('Network error. Please try again.');
+      if (data.success) setStaffList(prev => prev.filter(staff => staff._id !== id));
+      else alert('Failed to delete staff: ' + (data.message || 'Unknown error'));
+    } catch {
+      alert('Network error');
     } finally {
       setDeletingId(null);
     }
   };
 
+  const handleView = async (id) => {
+    try {
+      const res = await fetch(`http://31.97.206.144:5000/api/staff/${id}`);
+      const data = await res.json();
+      if (data.success) {
+        setSelectedStaff(data.data);
+        setShowModal(true);
+      } else {
+        alert('Failed to fetch staff details');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Error fetching details');
+    }
+  };
+
   // Filter logic
   const filteredStaff = staffList.filter(staff => {
-    const matchesSearch = 
+    const matchesSearch =
       staff.staffName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       staff.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
       staff.staffId.toLowerCase().includes(searchTerm.toLowerCase());
@@ -156,6 +165,13 @@ const Staff = () => {
                       <td className="py-3 px-4">{staff.role}</td>
                       <td className="py-3 px-4">
                         <div className="d-flex gap-3">
+                          <MdRemoveRedEye
+                            size={22}
+                            color="#007bff"
+                            title="View"
+                            style={{ cursor: 'pointer' }}
+                            onClick={() => handleView(staff._id)}
+                          />
                           <Link to={`/staff/${staff._id}`} title="Edit">
                             <MdEdit size={20} style={{ color: '#009788', cursor: 'pointer' }} />
                           </Link>
@@ -216,6 +232,76 @@ const Staff = () => {
           )}
         </div>
       </div>
+
+      {/* Modal */}
+      {showModal && selectedStaff && (
+        <div
+          className="modal fade show d-block"
+          tabIndex="-1"
+          style={{ backgroundColor: 'rgba(0,0,0,0.6)' }}
+          onClick={() => setShowModal(false)}
+        >
+          <div
+            className="modal-dialog modal-lg modal-dialog-centered"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="modal-content border-0 rounded-4 shadow-lg overflow-hidden">
+              <div
+                className="modal-header text-white"
+                style={{
+                  background: 'linear-gradient(90deg, #009788, #00bfa6)'
+                }}
+              >
+                <h5 className="modal-title fw-bold">Staff Details</h5>
+                <button className="btn-close btn-close-white" onClick={() => setShowModal(false)}></button>
+              </div>
+              <div
+                className="modal-body"
+                style={{
+                  background: 'linear-gradient(135deg, #e0f7fa, #f1f8e9)'
+                }}
+              >
+                <div className="card border-0 shadow-sm p-4 rounded-4"
+                  style={{ background: 'white', borderLeft: '6px solid #009788' }}>
+                  <h4 className="fw-bold mb-3 text-center" style={{ color: '#009788' }}>
+                    {selectedStaff.staffName}
+                  </h4>
+                  <p><strong>Staff ID:</strong> {selectedStaff.staffId}</p>
+                  <p><strong>Role:</strong> {selectedStaff.role}</p>
+                  <p><strong>Email:</strong> {selectedStaff.email}</p>
+                  <p><strong>Mobile:</strong> {selectedStaff.mobileNumber}</p>
+                  <p><strong>Active:</strong> {selectedStaff.isActive ? 'Yes' : 'No'}</p>
+
+                  {selectedStaff.documents?.length > 0 && (
+                    <div className="mt-3">
+                      <h6 className="fw-semibold">Documents:</h6>
+                      <div className="d-flex flex-wrap gap-3">
+                        {selectedStaff.documents.map((doc, i) => (
+                          <img
+                            key={i}
+                            src={doc}
+                            alt="document"
+                            style={{
+                              width: '120px',
+                              height: '120px',
+                              objectFit: 'cover',
+                              borderRadius: '8px',
+                              border: '2px solid #009788'
+                            }}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div className="modal-footer bg-light">
+                <button className="btn btn-secondary" onClick={() => setShowModal(false)}>Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

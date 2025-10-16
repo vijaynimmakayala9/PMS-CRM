@@ -28,7 +28,7 @@ const EditStaff = () => {
 
   const fetchStaff = async () => {
     try {
-      const res = await fetch(`https://admin-emp.onrender.com/api/staff/${id}`);
+      const res = await fetch(`http://31.97.206.144:5000/api/staff/${id}`);
       const data = await res.json();
       if (data.success) {
         const staff = data.data;
@@ -103,7 +103,7 @@ const EditStaff = () => {
     }
 
     try {
-      const response = await fetch(`https://admin-emp.onrender.com/api/update_staff/${id}`, {
+      const response = await fetch(`http://31.97.206.144:5000/api/update_staff/${id}`, {
         method: 'PUT',
         body: formDataToSend
       });

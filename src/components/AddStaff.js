@@ -87,7 +87,7 @@ const AddStaff = () => {
     formDataToSend.append('documents', file); // Backend expects 'documents'
 
     try {
-      const response = await fetch('https://admin-emp.onrender.com/api/create_staff', {
+      const response = await fetch('http://31.97.206.144:5000/api/create_staff', {
         method: 'POST',
         body: formDataToSend
       });

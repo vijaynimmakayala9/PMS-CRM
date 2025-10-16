@@ -1,7 +1,7 @@
 // src/components/Projects.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { MdEdit, MdDelete, MdPayment } from 'react-icons/md';
+import { MdEdit, MdDelete, MdPayment, MdVisibility } from 'react-icons/md';
 import * as XLSX from 'xlsx';
 
 const Projects = () => {
@@ -17,8 +17,14 @@ const Projects = () => {
     balancepayment: '',
     secondpayment: '',
     paydate: '',
-    paymentStatus: 'pending' // Added paymentStatus
+    paymentStatus: 'pending'
   });
+
+  // Project details modal state
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [projectDetails, setProjectDetails] = useState(null);
+  const [detailsLoading, setDetailsLoading] = useState(false);
+
   const modalRef = useRef(null);
 
   // Filters
@@ -34,6 +40,7 @@ const Projects = () => {
     const handleClickOutside = (e) => {
       if (modalRef.current && !modalRef.current.contains(e.target)) {
         setShowPaymentModal(false);
+        setShowDetailsModal(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -46,7 +53,7 @@ const Projects = () => {
 
   const fetchProjects = async () => {
     try {
-      const res = await fetch('https://admin-emp.onrender.com/api/projects');
+      const res = await fetch('http://31.97.206.144:5000/api/projects');
       const data = await res.json();
       if (data.success) {
         setProjects(data.data);
@@ -60,11 +67,30 @@ const Projects = () => {
     }
   };
 
+  // Fetch project details
+  const fetchProjectDetails = async (projectId) => {
+    setDetailsLoading(true);
+    try {
+      const res = await fetch(`http://31.97.206.144:5000/api/project/${projectId}`);
+      const data = await res.json();
+      if (data.success) {
+        setProjectDetails(data.data);
+        setShowDetailsModal(true);
+      } else {
+        alert('Failed to load project details');
+      }
+    } catch (err) {
+      alert('Network error while loading project details');
+    } finally {
+      setDetailsLoading(false);
+    }
+  };
+
   const handleDelete = async (id) => {
     if (!window.confirm('Delete this project?')) return;
     setDeletingId(id);
     try {
-      const res = await fetch(`https://admin-emp.onrender.com/api/project/${id}`, {
+      const res = await fetch(`http://31.97.206.144:5000/api/project/${id}`, {
         method: 'DELETE'
       });
       const data = await res.json();
@@ -81,8 +107,8 @@ const Projects = () => {
   const handleStatusChange = async (id, field, value) => {
     try {
       const endpoint = field === 'status' 
-        ? `https://admin-emp.onrender.com/api/${id}/status`
-        : `https://admin-emp.onrender.com/api/project/${id}`;
+        ? `http://31.97.206.144:5000/api/${id}/status`
+        : `http://31.97.206.144:5000/api/project/${id}`;
       
       const body = field === 'status' 
         ? { status: value }
@@ -135,11 +161,11 @@ const Projects = () => {
         balancepayment: balance,
         secondpayment: isNaN(second) ? 0 : second,
         paydate: paymentData.paydate,
-        paymentStatus: paymentData.paymentStatus // Include paymentStatus
+        paymentStatus: paymentData.paymentStatus
       };
 
       // Call payment API
-      const res = await fetch(`https://admin-emp.onrender.com/api/payment/${selectedProject._id}`, {
+      const res = await fetch(`http://31.97.206.144:5000/api/payment/${selectedProject._id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -163,6 +189,12 @@ const Projects = () => {
     } catch (err) {
       alert(`Payment failed: ${err.message}`);
     }
+  };
+
+  // Close details modal
+  const closeDetailsModal = () => {
+    setShowDetailsModal(false);
+    setProjectDetails(null);
   };
 
   // Excel Export
@@ -333,6 +365,132 @@ const Projects = () => {
         </div>
       )}
 
+      {/* Project Details Modal */}
+      {showDetailsModal && (
+        <div className="modal show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1050 }}>
+          <div className="modal-dialog modal-lg modal-dialog-centered" ref={modalRef}>
+            <div className="modal-content">
+              <div className="modal-header" style={{ backgroundColor: '#009788', color: 'white' }}>
+                <h5 className="modal-title fw-bold">Project Details</h5>
+                <button 
+                  type="button" 
+                  className="btn-close btn-close-white" 
+                  onClick={closeDetailsModal}
+                ></button>
+              </div>
+              <div className="modal-body">
+                {detailsLoading ? (
+                  <div className="text-center py-4">
+                    <div className="spinner-border text-teal" role="status">
+                      <span className="visually-hidden">Loading...</span>
+                    </div>
+                    <p className="mt-2">Loading project details...</p>
+                  </div>
+                ) : projectDetails ? (
+                  <div className="row">
+                    <div className="col-md-6">
+                      <div className="mb-3">
+                        <label className="fw-semibold text-teal">Project Name:</label>
+                        <p className="mb-0">{projectDetails.projectname}</p>
+                      </div>
+                      <div className="mb-3">
+                        <label className="fw-semibold text-teal">Client Name:</label>
+                        <p className="mb-0">{projectDetails.clientname}</p>
+                      </div>
+                      <div className="mb-3">
+                        <label className="fw-semibold text-teal">Mobile Number:</label>
+                        <p className="mb-0">{projectDetails.mobilenumber}</p>
+                      </div>
+                      <div className="mb-3">
+                        <label className="fw-semibold text-teal">Email:</label>
+                        <p className="mb-0">{projectDetails.email}</p>
+                      </div>
+                      <div className="mb-3">
+                        <label className="fw-semibold text-teal">Category:</label>
+                        <p className="mb-0 text-capitalize">{projectDetails.selectcategory}</p>
+                      </div>
+                    </div>
+                    <div className="col-md-6">
+                      <div className="mb-3">
+                        <label className="fw-semibold text-teal">Start Date:</label>
+                        <p className="mb-0">
+                          {new Date(projectDetails.startDate).toLocaleDateString('en-GB', {
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric'
+                          })}
+                        </p>
+                      </div>
+                      <div className="mb-3">
+                        <label className="fw-semibold text-teal">End Date:</label>
+                        <p className="mb-0">
+                          {new Date(projectDetails.endDate).toLocaleDateString('en-GB', {
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric'
+                          })}
+                        </p>
+                      </div>
+                      <div className="mb-3">
+                        <label className="fw-semibold text-teal">Total Price:</label>
+                        <p className="mb-0">₹{projectDetails.totalprice?.toLocaleString()}</p>
+                      </div>
+                      <div className="mb-3">
+                        <label className="fw-semibold text-teal">Advance:</label>
+                        <p className="mb-0">₹{projectDetails.advance?.toLocaleString()}</p>
+                      </div>
+                      <div className="mb-3">
+                        <label className="fw-semibold text-teal">Balance Payment:</label>
+                        <p className="mb-0">₹{projectDetails.balancepayment?.toLocaleString()}</p>
+                      </div>
+                      <div className="mb-3">
+                        <label className="fw-semibold text-teal">Second Payment:</label>
+                        <p className="mb-0">₹{projectDetails.secondpayment?.toLocaleString()}</p>
+                      </div>
+                      <div className="mb-3">
+                        <label className="fw-semibold text-teal">Status:</label>
+                        <p className="mb-0">
+                          <span className={`badge ${
+                            projectDetails.status === 'active' ? 'bg-success' :
+                            projectDetails.status === 'completed' ? 'bg-primary' : 'bg-danger'
+                          }`}>
+                            {projectDetails.status?.toUpperCase()}
+                          </span>
+                        </p>
+                      </div>
+                      <div className="mb-3">
+                        <label className="fw-semibold text-teal">Payment Status:</label>
+                        <p className="mb-0">
+                          <span className={`badge ${
+                            projectDetails.paymentStatus === 'fully_paid' ? 'bg-success' :
+                            projectDetails.paymentStatus === 'partially_paid' ? 'bg-warning text-dark' : 'bg-danger'
+                          }`}>
+                            {projectDetails.paymentStatus?.replace('_', ' ').toUpperCase()}
+                          </span>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center py-4">
+                    <p className="text-danger">Failed to load project details</p>
+                  </div>
+                )}
+              </div>
+              <div className="modal-footer">
+                <button 
+                  type="button" 
+                  className="btn btn-secondary" 
+                  onClick={closeDetailsModal}
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Filters */}
       <div className="card border-0 shadow-sm mb-4">
         <div className="card-body">
@@ -403,7 +561,7 @@ const Projects = () => {
                   <th className="py-3 px-4">Total Price</th>
                   <th className="py-3 px-4">Status</th>
                   <th className="py-3 px-4">Payment Status</th>
-                  <th className="py-3 px-4">Action</th>
+                  <th className="py-3 px-4">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -436,22 +594,45 @@ const Projects = () => {
                     </td>
                     <td className="py-3 px-4">
                       <div className="d-flex gap-3">
-                        <button
-                          type="button"
-                          className="btn btn-sm"
-                          title="Record Payment"
+                        {/* View Details Icon */}
+                        <span
+                          onClick={() => fetchProjectDetails(p._id)}
+                          title="View Details"
+                          style={{ cursor: 'pointer' }}
+                        >
+                          <MdVisibility size={20} style={{ color: '#17a2b8' }} />
+                        </span>
+                        
+                        {/* Payment Icon */}
+                        <span
                           onClick={() => openPaymentModal(p)}
+                          title="Record Payment"
+                          style={{ cursor: 'pointer' }}
                         >
                           <MdPayment size={20} style={{ color: '#198754' }} />
-                        </button>
+                        </span>
+                        
+                        {/* Edit Icon */}
                         <Link to={`/edit-project/${p._id}`} title="Edit">
-                          <MdEdit size={20} style={{ color: '#009788' }} />
+                          <MdEdit size={20} style={{ color: '#009788', cursor: 'pointer' }} />
                         </Link>
+                        
+                        {/* Delete Icon */}
                         <span
                           onClick={() => handleDelete(p._id)}
-                          style={{ cursor: 'pointer', color: '#dc3545' }}
+                          title="Delete"
+                          style={{ 
+                            cursor: deletingId === p._id ? 'not-allowed' : 'pointer', 
+                            opacity: deletingId === p._id ? 0.6 : 1 
+                          }}
                         >
-                          {deletingId === p._id ? 'Deleting...' : <MdDelete size={20} />}
+                          {deletingId === p._id ? (
+                            <div className="spinner-border spinner-border-sm text-danger" role="status">
+                              <span className="visually-hidden">Deleting...</span>
+                            </div>
+                          ) : (
+                            <MdDelete size={20} color="#dc3545" />
+                          )}
                         </span>
                       </div>
                     </td>

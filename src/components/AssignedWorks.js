@@ -42,7 +42,7 @@ const AssignedWorks = () => {
 
   const fetchAssignments = async () => {
     try {
-      const res = await fetch('https://admin-emp.onrender.com/api/all_assign_projects');
+      const res = await fetch('http://31.97.206.144:5000/api/all_assign_projects');
       const data = await res.json();
       if (data.success) {
         setAssignments(data.data);
@@ -60,7 +60,7 @@ const AssignedWorks = () => {
     if (!window.confirm('Are you sure you want to delete this assignment?')) return;
     setDeletingId(id);
     try {
-      const res = await fetch(`https://admin-emp.onrender.com/api/delete_assign_project/${id}`, {
+      const res = await fetch(`http://31.97.206.144:5000/api/delete_assign_project/${id}`, {
         method: 'DELETE'
       });
       const data = await res.json();

@@ -3,6 +3,7 @@ import React from 'react';
 import WelcomeCard from './DashboardComponents/WelcomeCard';
 import ChartCard from './DashboardComponents/ChartCard';
 import ProjectsTable from './DashboardComponents/ProjectTable';
+import ProjectStatsCard from './DashboardComponents/ProjectStats';
 
 const Dashboard = () => {
   return (
@@ -14,10 +15,11 @@ const Dashboard = () => {
           <WelcomeCard />
         </div>
         <div className="col-lg-8">
-          <ChartCard />
+          <ProjectStatsCard/>
+          
         </div>
       </div>
-
+<ChartCard />
       <ProjectsTable />
     </div>
   );

@@ -35,7 +35,7 @@ const EditProject = () => {
 
   const fetchProject = async () => {
     try {
-      const res = await fetch(`https://admin-emp.onrender.com/api/project/${id}`);
+      const res = await fetch(`http://31.97.206.144:5000/api/project/${id}`);
       const data = await res.json();
       if (data.success) {
         const p = data.data;
@@ -83,7 +83,7 @@ const EditProject = () => {
     }
 
     try {
-      const res = await fetch(`https://admin-emp.onrender.com/api/project/${id}`, {
+      const res = await fetch(`http://31.97.206.144:5000/api/project/${id}`, {
         method: 'PUT',
         body: formDataToSend
       });

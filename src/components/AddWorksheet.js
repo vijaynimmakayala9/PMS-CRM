@@ -29,8 +29,8 @@ const AddWorksheet = () => {
     const fetchOptions = async () => {
       try {
         const [staffRes, projectRes] = await Promise.all([
-          fetch('https://admin-emp.onrender.com/api/get_all_staffs'),
-          fetch('https://admin-emp.onrender.com/api/projects')
+          fetch('http://31.97.206.144:5000/api/get_all_staffs'),
+          fetch('http://31.97.206.144:5000/api/projects')
         ]);
         const staffData = await staffRes.json();
         const projectData = await projectRes.json();
@@ -93,7 +93,7 @@ const AddWorksheet = () => {
     }
 
     try {
-      const res = await fetch('https://admin-emp.onrender.com/api/assign_project', {
+      const res = await fetch('http://31.97.206.144:5000/api/assign_project', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)

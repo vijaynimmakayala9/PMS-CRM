@@ -15,6 +15,12 @@ import AddWorksheet from './components/AddWorksheet';
 import EditStaff from './components/EditStaff';
 import EditProject from './components/EditProject';
 import EditWorksheet from './components/EditWorksheet';
+import AddAttendance from './components/Attendance/AddAttendance';
+import ShowAttendance from './components/Attendance/ShowAttendance';
+import CreateInvoice from './components/Invoice/CreateInvoice';
+import ShowInvoices from './components/Invoice/ShowInvoices';
+import CreatePayslip from './components/Payslips/CreatePayslip';
+import ShowPayslips from './components/Payslips/ShowPayslips';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -57,6 +63,12 @@ function App() {
         <Route path="assigned-works" element={<AssignedWorks />} />
         <Route path="add-worksheet" element={<AddWorksheet />} />
         <Route path="edit-worksheet/:id" element={<EditWorksheet />} />
+        <Route path="add-attendance" element={<AddAttendance />} />
+        <Route path="attendance" element={<ShowAttendance />} />
+        <Route path="create-invoice" element={<CreateInvoice />} />
+        <Route path="invoices" element={<ShowInvoices />} />
+        <Route path="create-payslip" element={<CreatePayslip />} />
+        <Route path="payslips" element={<ShowPayslips />} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Route>
     </Routes>

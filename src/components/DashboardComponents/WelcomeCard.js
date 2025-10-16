@@ -14,12 +14,10 @@ const WelcomeCard = () => {
   useEffect(() => {
     const fetchCounts = async () => {
       try {
-        // Fetch project counts
-        const countsRes = await fetch('https://admin-emp.onrender.com/api/counts');
+        const countsRes = await fetch('http://31.97.206.144:5000/api/counts');
         const countsData = await countsRes.json();
 
-        // Fetch staff count
-        const staffRes = await fetch('https://admin-emp.onrender.com/api/get_all_staffs');
+        const staffRes = await fetch('http://31.97.206.144:5000/api/get_all_staffs');
         const staffData = await staffRes.json();
 
         if (countsData.success && staffData.success) {
@@ -41,67 +39,43 @@ const WelcomeCard = () => {
     fetchCounts();
   }, []);
 
-  // Each stat with icon + color
   const stats = [
-    { number: counts.totalProjects, label: 'Projects', icon: <FaProjectDiagram />, color: '#007bff' }, // Blue
-    { number: counts.apps, label: 'Apps', icon: <FaMobileAlt />, color: '#28a745' }, // Green
-    { number: counts.websites, label: 'Websites', icon: <FaGlobe />, color: '#ffc107' }, // Yellow
-    { number: counts.marketing, label: 'Marketing', icon: <FaBullhorn />, color: '#dc3545' }, // Red
-    { number: counts.staff, label: 'Staff', icon: <FaUsers />, color: '#6f42c1' }, // Purple
+    { number: counts.totalProjects, label: 'Projects', icon: <FaProjectDiagram className="text-3xl" />, color: 'bg-blue-500' },
+    { number: counts.apps, label: 'Apps', icon: <FaMobileAlt className="text-3xl" />, color: 'bg-green-500' },
+    { number: counts.websites, label: 'Websites', icon: <FaGlobe className="text-3xl" />, color: 'bg-yellow-500' },
+    { number: counts.marketing, label: 'Marketing', icon: <FaBullhorn className="text-3xl" />, color: 'bg-red-500' },
+    { number: counts.staff, label: 'Staff', icon: <FaUsers className="text-3xl" />, color: 'bg-purple-500' },
   ];
 
-  const circleStyle = (color) => ({
-    width: '100px',
-    height: '100px',
-    borderRadius: '50%',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    color: 'white',
-    backgroundColor: color,
-    boxShadow: '0px 4px 8px rgba(0,0,0,0.2)',
-  });
-
   return (
-    <div
-      className="card border-0 shadow-sm h-100"
-      style={{ background: 'linear-gradient(135deg, #008080, #008080)' }}
-    >
-      <div className="card-body text-white text-center py-5">
-        <h4 className="mb-4">Welcome Back!</h4>
+    <div className="bg-gradient-to-br from-teal-600 to-teal-700 rounded-2xl shadow-xl overflow-hidden text-white max-w-full mx-auto">
+      <div className="p-4 sm:p-6 md:p-8 text-center">
+        <h4 className="text-lg sm:text-xl md:text-2xl font-semibold mb-4 sm:mb-5">Welcome Back!</h4>
 
         {/* Avatar */}
-        <div className="d-flex justify-content-center mb-4">
-          <div
-            style={{
-              width: '100px',
-              height: '100px',
-              backgroundColor: 'white',
-              borderRadius: '50%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <span style={{ fontSize: '50px' }}>👤</span>
+        <div className="flex justify-center mb-4 sm:mb-5">
+          <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-full bg-white flex items-center justify-center shadow-lg">
+            <span className="text-3xl sm:text-4xl md:text-5xl">👤</span>
           </div>
         </div>
 
-        <h5 className="mb-4">Ganapathi Varma</h5>
+        <h5 className="text-lg sm:text-xl md:text-2xl font-medium mb-5 sm:mb-7">Ganapathi Varma</h5>
 
-        {/* Stats Circles */}
-        <div className="row g-3 px-3">
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3 md:gap-4">
           {loading ? (
-            <div className="text-center text-white-50">Loading...</div>
+            <div className="col-span-1 sm:col-span-2 md:col-span-3 lg:col-span-5 text-center py-4">
+              <div className="inline-block h-5 w-5 sm:h-6 sm:w-6 animate-spin rounded-full border-4 border-white border-t-transparent"></div>
+            </div>
           ) : (
             stats.map((stat, index) => (
-              <div key={index} className="col-6 d-flex justify-content-center">
-                <div style={circleStyle(stat.color)}>
-                  <div className="fs-3">{stat.icon}</div>
-                  <div className="fw-bold fs-5">{stat.number}</div>
-                  <small>{stat.label}</small>
-                </div>
+              <div
+                key={index}
+                className={`flex flex-col items-center justify-center p-3 rounded-xl ${stat.color} transition-transform duration-300 hover:scale-105 shadow-md`}
+              >
+                <div className="mb-1 text-white">{stat.icon}</div>
+                <div className="text-xl sm:text-2xl md:text-2xl font-bold">{stat.number}</div>
+                <div className="text-xs sm:text-sm md:text-base mt-1 opacity-90">{stat.label}</div>
               </div>
             ))
           )}
